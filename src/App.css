@@ -1,38 +1,43 @@
-.App {
-  text-align: center;
+/* --------------------------------header */
+.header ul li {
+    position: relative;
+    padding: 5px 0;
 }
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header ul li::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: rgb(20, 20, 218);
+    border-radius: 1px;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.header ul li.active::before {
+    width: 100%;
+    transition: 0.3s;
+}
+.header ul li.active {
+    color: rgb(20, 20, 218);
+}
+/* ------------------------custom button  */
+.btn {
+    /* font-size: 20px; */
+    cursor: pointer;
+    /* border-radius: 5px; */
+    background: linear-gradient(to right, rgb(17, 17, 167) 50%, white 50%);
+    background-position: right;
+    background-size: 200% 100%;
+    /* border: 1px solid var(--main-color); */
+    overflow: hidden;
+    font-weight: bold;
+    transition: 0.5s;
   }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.btn:hover {
+    background-position: left;
+    color: white;
   }
-  to {
-    transform: rotate(360deg);
+  /* scroll bare */
+::-webkit-scrollbar {
+    width: 0;
   }
-}
+  

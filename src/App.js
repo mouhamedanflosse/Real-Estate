@@ -1,24 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Home from "./pages/Home";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
+import Profile from "./pages/Profile";
+import Offers from "./pages/Offers";
+import ForgetPassword from "./pages/ForgetPassword";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Header from "./component/Header";
+import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider } from "@material-tailwind/react";
+import { ToastContainer } from "react-toastify";
+import Privateroute from "./component/PrivateRoute";
+import CreateListing from "./pages/CreateListing";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider>
+      <div>
+        <BrowserRouter>
+          <Header />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/sign-In" element={<SignIn />} />
+
+            {/* ----------private Route */}
+            <Route path="/profile" element={<Privateroute/>}>
+              <Route path="/profile" element={<Profile />} />
+            </Route>
+            {/* ------------------------------ */}
+            <Route path="/create-listing" element={<Privateroute/>}>
+            <Route path="/create-listing" element={<CreateListing />} />
+            </Route>
+           {/* ------------------------------------------------*/}
+            <Route path="/offers" element={<Offers />} />
+            <Route path="/forget-password" element={<ForgetPassword />} />
+          </Routes>
+          <ToastContainer
+            toastClassName="w-[200px] h-[20px] mx-auto -translate-y-[20px] Xsm:translate-y-0 sm:w-[220px] text-[14px] "
+            position="bottom-center"
+            autoClose={2000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+           pauseOnHover
+            theme="dark"
+          /> 
+        </BrowserRouter>
+      </div>
+    </ThemeProvider>
   );
 }
 
