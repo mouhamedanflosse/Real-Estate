@@ -7,7 +7,10 @@ module.exports = withMT({
       screens: {
         Xmd: "860px",
         Xsm: "481px",
-        FS : "100%"
+        FS: "100%",
+      },
+      gridTemplateColumns: {
+        "auto-fill": "repeat(auto-fit, minmax(300px, 1fr))",
       },
     },
   },

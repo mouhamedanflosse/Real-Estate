@@ -12,8 +12,8 @@ import Moment from "react-moment";
 import { Link } from "react-router-dom";
 const ListingItems = ({ listing, id }) => {
   return (
-    <Link to={`/category/${listing.rentOrSell}/${id}`}>
-    <div className="p-[50px]">
+    <Link className="mx-auto " to={`/category/${listing.rentOrSell}/${id}`}>
+    <div className="hover:-translate-y-5 duration-300 translate-y-0">
       {/* --------------------- */}
       <Card className="max-w-[300px] overflow-hidden cursor-pointer">
         <CardHeader
