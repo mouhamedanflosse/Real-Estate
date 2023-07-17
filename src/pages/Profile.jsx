@@ -5,6 +5,8 @@ import { auth, db } from "../config/firebase";
 import { useEffect, useState } from "react";
 import {
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -15,36 +17,54 @@ import { Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import ListingItems from "../component/ListingItems";
 import { motion } from "framer-motion";
+import {toast} from "react-toastify"
 
 function Profile() {
   // -------------initialize useNavigate
   const navigate = useNavigate();
   //-------------------listings state
   const [listings, setListings] = useState([]);
-  useEffect(() => {
-    const fetchUserListing = async () => {
-      const listingRef = collection(db, "listings");
-      const Q = query(
-        listingRef,
-        where("userRef", "==", auth.currentUser.uid),
-        orderBy("timestamp", "desc")
-      );
-      const querySnap = await getDocs(Q);
-      let listings = [];
-      querySnap.forEach((listing) => {
-        return listings.push({
-          id: listing.id,
-          data: listing.data(),
-        });
+
+  // ---------------------------fetch listings
+  const fetchUserListing = async () => {
+    const listingRef = collection(db, "listings");
+    const Q = query(
+      listingRef,
+      where("userRef", "==", auth.currentUser.uid),
+      orderBy("timestamp", "desc")
+    );
+    const querySnap = await getDocs(Q);
+    let listings = [];
+    querySnap.forEach((listing) => {
+      return listings.push({
+        id: listing.id,
+        data: listing.data(),
       });
-      setListings(listings);
-      console.log(listings);
-    };
-    console.log(listings);
+    });
+    setListings(listings);
+  };
+  useEffect(() => {
     fetchUserListing();
   }, [auth.currentUser.uid]);
-  //-------------------framer motion animation
-  console.log(auth.currentUser?.photoURL)
+  // -------------------------------delete listing item
+  const onDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db,"listings",id))
+      fetchUserListing()
+    } catch (err) {
+      console.log(err)
+      if (JSON.stringify(err).includes("auth/network-request-failed")) {
+        toast.error("terrible connection");
+      } else {
+        toast.error("something went wrong");
+      }
+    }
+  }
+  // -------------------------------edit listing item
+  const onEdite = async (id) => {
+    navigate(`/edit-listing/${id}`)
+  }
+
   return (
     <div>
       <div className="w-fit mx-auto relative">
@@ -79,6 +99,8 @@ function Profile() {
             className="mx-auto"
             >
             <ListingItems
+              onDelete={() => onDelete(listing.id)}
+              onEdite={() => onEdite(listing.id)}
               listing={listing.data}
               id={listing.id}
             />

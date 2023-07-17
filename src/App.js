@@ -12,6 +12,7 @@ import { ThemeProvider } from "@material-tailwind/react";
 import { ToastContainer } from "react-toastify";
 import Privateroute from "./component/PrivateRoute";
 import CreateListing from "./pages/CreateListing";
+import EditListing from "./pages/EditListing";
 
 function App() {
   return (
@@ -32,12 +33,16 @@ function App() {
             <Route path="/create-listing" element={<Privateroute/>}>
             <Route path="/create-listing" element={<CreateListing />} />
             </Route>
+            {/* ------------------------------ */}
+            <Route path="/edit-listing" element={<Privateroute/>}>
+            <Route path="/edit-listing/:listingId" element={<EditListing />} />
+            </Route>
            {/* ------------------------------------------------*/}
             <Route path="/offers" element={<Offers />} />
             <Route path="/forget-password" element={<ForgetPassword />} />
           </Routes>
           <ToastContainer
-            toastClassName="w-[200px] h-[20px] mx-auto -translate-y-[20px] Xsm:translate-y-0 sm:w-[220px] text-[14px] "
+            toastClassName="w-[200px] h-[20px] mx-auto -translate-y-[20px] Xsm:translate-y-0 sm:w-[220px] text-[14px]"
             position="bottom-center"
             autoClose={2000}
             hideProgressBar
@@ -48,7 +53,7 @@ function App() {
             draggable
            pauseOnHover
             theme="dark"
-          /> 
+          />
         </BrowserRouter>
       </div>
     </ThemeProvider>

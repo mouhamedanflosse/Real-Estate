@@ -19,12 +19,48 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { db } from "../config/firebase";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-const CreateListing = () => {
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { useNavigate, useParams } from "react-router-dom";
+import { useRef } from "react";
+
+export default function EditListing() {
+  // ---------------------------
+  const hasBeenExecuted = useRef(false);
+  // ---------------get the litings item id
+  const params = useParams();
   // -------------------------useEffect
+  const fetchData = async () => {
+    try {
+      const docRef = doc(db, "listings", params.listingId);
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data();
+      if (data.userRef !== auth.currentUser?.uid && !hasBeenExecuted.current) {
+        toast.error("you're not allowed to edit this listing")
+        navigate("/")
+        hasBeenExecuted.current = true;
+      }
+      setTitle(data.title);
+      setBaths(data.Baths);
+      setBeds(data.beds);
+      setDiscreption(data.discreption);
+      setLatitude(data.adress.latitude);
+      setLongitude(data.adress.longitude);
+      setParkingSpot(data.parkingSpot);
+      setRentOrSell(data.rentOrSell);
+      setPrice(data.price);
+      setUrlPic(data.imgUrls);
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
   useEffect(() => {
-    handleLocationClick();
+    fetchData();
   }, []);
   // -----------open end switch tabs states
   const [type, setType] = useState("card");
@@ -43,29 +79,10 @@ const CreateListing = () => {
   const [parkingSpot, setParkingSpot] = useState(false);
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
-  const [pic, setPic] = useState();
-  // -----------------------------------------------
+  const [pic, setPic] = useState("");
+  const [urlPic, setUrlPic] = useState("");
   // -----------------initialize useNavigate
-  const navigate  = useNavigate()
-
-  function handleLocationClick() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, error);
-    } else {
-      console.log("Geolocation not supported");
-    }
-  }
-
-  function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    setLatitude(latitude);
-    setLongitude(longitude);
-  }
-
-  function error() {
-    console.log("Unable to retrieve your location");
-  }
+  const navigate = useNavigate();
 
   // ------------------- picture
   function handlePhoto(e) {
@@ -77,7 +94,7 @@ const CreateListing = () => {
         Math.random() * 10000000
       )}`;
       const storageRef = ref(storage, fileName);
-      const uploadTask =  uploadBytesResumable(storageRef, image);
+      const uploadTask = uploadBytesResumable(storageRef, image);
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -87,7 +104,7 @@ const CreateListing = () => {
           console.log("Upload is " + progress + "% done");
         },
         (error) => {
-          console.log("error")
+          console.log("error");
           rejected(error);
         },
         () => {
@@ -100,48 +117,52 @@ const CreateListing = () => {
       );
     });
   };
-
+  // -------------------------submit form info
   const onSubmit = async (e) => {
     e.preventDefault();
-      setSubmiting(true);
-      const listingInfo = {
-        title: title,
-        rentOrSell: RentOrSell,
-        beds: beds,
-        Baths: Baths,
-        parkingSpot: parkingSpot,
-        adress: { latitude: latitude, longitude: longitude },
-        price: price,
-        discreption: discreption,
-      };
-      console.log(listingInfo);
-      console.log(pic);
-      // ------------upload the images
-      const imgUrls = await Promise.all(
-        [...pic].map((image) => storeImage(image))
-      ).catch((err) => {
-        toast.error("images not uploaded");
-        console.log(err)
-        console.log("sucess")
-        return;
-      });
-      // -------------push the listing into firestore
-      const fromDatalisting = {
-        ...listingInfo,
-        imgUrls,
-        userRef : auth.currentUser.uid,
-        timestamp: serverTimestamp(),
-      };
-      const docRef = await addDoc(collection(db, "listings"), fromDatalisting);
-      setSubmiting(false);
-      toast.success("the listing is created")
-      navigate(`/category/${fromDatalisting.rentOrSell}/${docRef.id}`)
+    setSubmiting(true);
+    const listingInfo = {
+      title: title,
+      rentOrSell: RentOrSell,
+      beds: beds,
+      Baths: Baths,
+      parkingSpot: parkingSpot,
+      adress: { latitude: latitude, longitude: longitude },
+      price: price,
+      discreption: discreption,
+    };
+    // ------------upload the images
+    let imgUrls;
+    if (urlPic !== "") {
+      imgUrls = urlPic
+    } else{
+     imgUrls = await Promise.all(
+      [...pic].map((image) => storeImage(image))
+    ).catch((err) => {
+      toast.error("images not uploaded");
+      console.log(err);
+      console.log("sucess");
+      return;
+    })}
+    // -------------push the listing into firestore
+    const fromDatalisting = {
+      ...listingInfo,
+      imgUrls,
+      userRef: auth.currentUser.uid,
+      timestamp: serverTimestamp(),
+    };
+    const docRef = doc(db, "listings", params.listingId);
+    await updateDoc(docRef, fromDatalisting);
+    setSubmiting(false);
+    toast.success("the listing is updated");
+    navigate(`/category/${fromDatalisting.rentOrSell}/${docRef.id}`);
   };
+
   return (
     <>
       <Card className="w-full max-w-[24rem] mx-auto mt-7">
         <h1 className="text-[20px] mt-[10px] mx-auto font-bold ">
-          list your home
+          Edit listing
         </h1>
         <CardBody className="pb-[10px]">
           <Tabs value={type} className="overflow-visible">
@@ -181,6 +202,7 @@ const CreateListing = () => {
                     color="gray"
                     variant="standard"
                     label="Rent/Sell"
+                    value={RentOrSell}
                   >
                     <Option value="rent" className="dark:bg-[#334155]">
                       Rent
@@ -217,13 +239,14 @@ const CreateListing = () => {
                         onChange={(e) => setParkingSpot(e.target.checked)}
                         name="type"
                         label="yes"
+                        checked={parkingSpot}
                       />
                       <Radio
                         id="react"
                         name="type"
+                        checked={!parkingSpot}
                         onChange={(e) => setParkingSpot(!e.target.checked)}
                         label="no"
-                        defaultChecked
                         className="bg-transparent"
                       />
                     </div>
@@ -309,7 +332,6 @@ const CreateListing = () => {
                         onChange={handlePhoto}
                         multiple
                         accept=".jpg,.png,.jpeg"
-                        required
                       />
                     </label>
                   </div>
@@ -320,7 +342,7 @@ const CreateListing = () => {
                     {submiting ? (
                       <Spinner className="w-6" color="blue" />
                     ) : (
-                      "List It"
+                      "save it"
                     )}
                   </button>
                 </form>
@@ -331,6 +353,4 @@ const CreateListing = () => {
       </Card>
     </>
   );
-};
-
-export default CreateListing;
+}
