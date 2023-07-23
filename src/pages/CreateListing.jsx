@@ -14,7 +14,6 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { auth, storage } from "../config/firebase";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { Spinner } from "@material-tailwind/react";
-
 import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -39,14 +38,15 @@ const CreateListing = () => {
   const [beds, setBeds] = useState(1);
   const [Baths, setBaths] = useState(1);
   const [price, setPrice] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [offer, setOffer] = useState(false);
   const [discreption, setDiscreption] = useState("");
   const [parkingSpot, setParkingSpot] = useState(false);
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const [pic, setPic] = useState();
-  // -----------------------------------------------
   // -----------------initialize useNavigate
-  const navigate  = useNavigate()
+  const navigate = useNavigate();
 
   function handleLocationClick() {
     if (navigator.geolocation) {
@@ -77,7 +77,7 @@ const CreateListing = () => {
         Math.random() * 10000000
       )}`;
       const storageRef = ref(storage, fileName);
-      const uploadTask =  uploadBytesResumable(storageRef, image);
+      const uploadTask = uploadBytesResumable(storageRef, image);
       uploadTask.on(
         "state_changed",
         (snapshot) => {
@@ -87,13 +87,12 @@ const CreateListing = () => {
           console.log("Upload is " + progress + "% done");
         },
         (error) => {
-          console.log("error")
+          console.log("error");
           rejected(error);
         },
         () => {
           // Upload completed successfully, now we can get the download URL
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            // console.log('Download URL:', downloadURL);
             resolve(downloadURL);
           });
         }
@@ -103,39 +102,39 @@ const CreateListing = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-      setSubmiting(true);
-      const listingInfo = {
-        title: title,
-        rentOrSell: RentOrSell,
-        beds: beds,
-        Baths: Baths,
-        parkingSpot: parkingSpot,
-        adress: { latitude: latitude, longitude: longitude },
-        price: price,
-        discreption: discreption,
-      };
-      console.log(listingInfo);
-      console.log(pic);
-      // ------------upload the images
-      const imgUrls = await Promise.all(
-        [...pic].map((image) => storeImage(image))
-      ).catch((err) => {
-        toast.error("images not uploaded");
-        console.log(err)
-        console.log("sucess")
-        return;
-      });
-      // -------------push the listing into firestore
-      const fromDatalisting = {
-        ...listingInfo,
-        imgUrls,
-        userRef : auth.currentUser.uid,
-        timestamp: serverTimestamp(),
-      };
-      const docRef = await addDoc(collection(db, "listings"), fromDatalisting);
-      setSubmiting(false);
-      toast.success("the listing is created")
-      navigate(`/category/${fromDatalisting.rentOrSell}/${docRef.id}`)
+    setSubmiting(true);
+    const listingInfo = {
+      title: title,
+      rentOrSell: RentOrSell,
+      beds: beds,
+      Baths: Baths,
+      parkingSpot: parkingSpot,
+      adress: { latitude: latitude, longitude: longitude },
+      price: price,
+      discreption: discreption,
+    };
+    console.log(listingInfo);
+    console.log(pic);
+    // ------------upload the images
+    const imgUrls = await Promise.all(
+      [...pic].map((image) => storeImage(image))
+    ).catch((err) => {
+      toast.error("images not uploaded");
+      console.log(err);
+      console.log("sucess");
+      return;
+    });
+    // -------------push the listing into firestore
+    const fromDatalisting = {
+      ...listingInfo,
+      imgUrls,
+      userRef: auth.currentUser.uid,
+      timestamp: serverTimestamp(),
+    };
+    const docRef = await addDoc(collection(db, "listings"), fromDatalisting);
+    setSubmiting(false);
+    toast.success("the listing is created");
+    navigate(`/category/${fromDatalisting.rentOrSell}/${docRef.id}`);
   };
   return (
     <>
@@ -209,23 +208,46 @@ const CreateListing = () => {
                       <h2 className="text-center inline ml-2">baths</h2>
                     </div>
                   </div>
-                  <div>
-                    <h1 className="font-bold">parking spot</h1>
-                    <div className="flex gap-10">
-                      <Radio
-                        id="html"
-                        onChange={(e) => setParkingSpot(e.target.checked)}
-                        name="type"
-                        label="yes"
-                      />
-                      <Radio
-                        id="react"
-                        name="type"
-                        onChange={(e) => setParkingSpot(!e.target.checked)}
-                        label="no"
-                        defaultChecked
-                        className="bg-transparent"
-                      />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="font-bold">parking spot</h1>
+                      <div className="flex gap-4">
+                        <Radio
+                          id="html"
+                          onChange={(e) => setParkingSpot(e.target.checked)}
+                          name="type"
+                          label="yes"
+                          checked={parkingSpot}
+                        />
+                        <Radio
+                          id="react"
+                          name="type"
+                          onChange={(e) => setParkingSpot(!e.target.checked)}
+                          label="no"
+                          checked={!parkingSpot}
+                          className="bg-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <h1 className="font-bold">Offer</h1>
+                      <div className="flex gap-4">
+                        <Radio
+                          id="html1"
+                          onChange={(e) => setOffer(e.target.checked)}
+                          name="typ1e"
+                          label="yes"
+                          checked={offer}
+                        />
+                        <Radio
+                          id="react1"
+                          name="type1"
+                          onChange={(e) => setOffer(!e.target.checked)}
+                          label="no"
+                          checked={!offer}
+                          className="bg-transparent"
+                        />
+                      </div>
                     </div>
                   </div>
                   <h1 className="font-bold -mt-[10px]">Adress</h1>
@@ -271,20 +293,40 @@ const CreateListing = () => {
                   onSubmit={onSubmit}
                   className="mt-[15px] flex flex-col gap-2"
                 >
-                  <div>
-                    <h1 className="font-semibold">price</h1>
-                    <div className="flex gap-[15px] items-center">
-                      <input
-                        type="number"
-                        min="1"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
-                      />
-                      {RentOrSell === "rent" && (
-                        <h2 className="text-center inline ml-2">$/Mounth</h2>
-                      )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="font-semibold">price</h1>
+                      <div className="flex gap-[15px] items-center">
+                        <input
+                          type="number"
+                          min=""
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                          className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
+                        />
+                        {offer
+                          ? ""
+                          : RentOrSell === "rent" && (
+                              <h2 className="text-center inline ml-2">
+                                $/Mounth
+                              </h2>
+                            )}
+                      </div>
                     </div>
+                    {offer ? (
+                      <div>
+                        <h1 className="font-semibold">discounted price</h1>
+                        <input
+                          type="number"
+                          max={+price - 10}
+                          value={discount}
+                          onChange={(e) => setDiscount(e.target.value)}
+                          className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                   <h1 className="font-bold">the description</h1>
                   <textarea

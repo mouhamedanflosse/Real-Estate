@@ -19,12 +19,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { db } from "../config/firebase";
-import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
 
@@ -40,8 +35,8 @@ export default function EditListing() {
       const docSnap = await getDoc(docRef);
       const data = docSnap.data();
       if (data.userRef !== auth.currentUser?.uid && !hasBeenExecuted.current) {
-        toast.error("you're not allowed to edit this listing")
-        navigate("/")
+        toast.error("you're not allowed to edit this listing");
+        navigate("/");
         hasBeenExecuted.current = true;
       }
       setTitle(data.title);
@@ -54,7 +49,9 @@ export default function EditListing() {
       setRentOrSell(data.rentOrSell);
       setPrice(data.price);
       setUrlPic(data.imgUrls);
-
+      setTimestamp(data.timestamp);
+      setDiscount(data.discount)
+      setOffer(data.offer)
     } catch (err) {
       console.log(err);
     }
@@ -75,12 +72,15 @@ export default function EditListing() {
   const [beds, setBeds] = useState(1);
   const [Baths, setBaths] = useState(1);
   const [price, setPrice] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [offer, setOffer] = useState(false);
   const [discreption, setDiscreption] = useState("");
   const [parkingSpot, setParkingSpot] = useState(false);
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const [pic, setPic] = useState("");
   const [urlPic, setUrlPic] = useState("");
+  const [timestamp, setTimestamp] = useState("");
   // -----------------initialize useNavigate
   const navigate = useNavigate();
 
@@ -130,26 +130,29 @@ export default function EditListing() {
       adress: { latitude: latitude, longitude: longitude },
       price: price,
       discreption: discreption,
+      timestamp: timestamp,
+      offer: offer,
+      discount: discount,
     };
     // ------------upload the images
     let imgUrls;
-    if (urlPic !== "") {
-      imgUrls = urlPic
-    } else{
-     imgUrls = await Promise.all(
-      [...pic].map((image) => storeImage(image))
-    ).catch((err) => {
-      toast.error("images not uploaded");
-      console.log(err);
-      console.log("sucess");
-      return;
-    })}
+    if (pic === "") {
+      imgUrls = urlPic;
+    } else {
+      imgUrls = await Promise.all(
+        [...pic].map((image) => storeImage(image))
+      ).catch((err) => {
+        toast.error("images not uploaded");
+        console.log(err);
+        console.log("sucess");
+        return;
+      });
+    }
     // -------------push the listing into firestore
     const fromDatalisting = {
       ...listingInfo,
       imgUrls,
       userRef: auth.currentUser.uid,
-      timestamp: serverTimestamp(),
     };
     const docRef = doc(db, "listings", params.listingId);
     await updateDoc(docRef, fromDatalisting);
@@ -231,24 +234,46 @@ export default function EditListing() {
                       <h2 className="text-center inline ml-2">baths</h2>
                     </div>
                   </div>
-                  <div>
-                    <h1 className="font-bold">parking spot</h1>
-                    <div className="flex gap-10">
-                      <Radio
-                        id="html"
-                        onChange={(e) => setParkingSpot(e.target.checked)}
-                        name="type"
-                        label="yes"
-                        checked={parkingSpot}
-                      />
-                      <Radio
-                        id="react"
-                        name="type"
-                        checked={!parkingSpot}
-                        onChange={(e) => setParkingSpot(!e.target.checked)}
-                        label="no"
-                        className="bg-transparent"
-                      />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="font-bold">parking spot</h1>
+                      <div className="flex gap-4">
+                        <Radio
+                          id="html"
+                          onChange={(e) => setParkingSpot(e.target.checked)}
+                          name="type"
+                          label="yes"
+                          checked={parkingSpot}
+                        />
+                        <Radio
+                          id="react"
+                          name="type"
+                          onChange={(e) => setParkingSpot(!e.target.checked)}
+                          label="no"
+                          checked={!parkingSpot}
+                          className="bg-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <h1 className="font-bold">Offer</h1>
+                      <div className="flex gap-4">
+                        <Radio
+                          id="html1"
+                          onChange={(e) => setOffer(e.target.checked)}
+                          name="typ1e"
+                          label="yes"
+                          checked={offer}
+                        />
+                        <Radio
+                          id="react1"
+                          name="type1"
+                          onChange={(e) => setOffer(!e.target.checked)}
+                          label="no"
+                          checked={!offer}
+                          className="bg-transparent"
+                        />
+                      </div>
                     </div>
                   </div>
                   <h1 className="font-bold -mt-[10px]">Adress</h1>
@@ -294,20 +319,40 @@ export default function EditListing() {
                   onSubmit={onSubmit}
                   className="mt-[15px] flex flex-col gap-2"
                 >
-                  <div>
-                    <h1 className="font-semibold">price</h1>
-                    <div className="flex gap-[15px] items-center">
-                      <input
-                        type="number"
-                        min="1"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                        className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
-                      />
-                      {RentOrSell === "rent" && (
-                        <h2 className="text-center inline ml-2">$/Mounth</h2>
-                      )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="font-semibold">price</h1>
+                      <div className="flex gap-[15px] items-center">
+                        <input
+                          type="number"
+                          min=""
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                          className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
+                        />
+                        {offer
+                          ? ""
+                          : RentOrSell === "rent" && (
+                              <h2 className="text-center inline ml-2">
+                                $/Mounth
+                              </h2>
+                            )}
+                      </div>
                     </div>
+                    {offer ? (
+                      <div>
+                        <h1 className="font-semibold">discounted price</h1>
+                        <input
+                          type="number"
+                          max={+price - 10}
+                          value={discount}
+                          onChange={(e) => setDiscount(e.target.value)}
+                          className="text-center self-end w-[150px] shadow-sm border-2 border-gray-500 outline-none   rounded-md"
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                   <h1 className="font-bold">the description</h1>
                   <textarea
@@ -335,6 +380,7 @@ export default function EditListing() {
                       />
                     </label>
                   </div>
+
                   <button
                     type="submit"
                     className="bg-blue-600 disabled:bg-blue-300 flex w-full justify-center items-center gap-2 select-none mx-auto mt-[!0px] p-[10px] text-white text-[18px] font-semibold hover:bg-blue-500 rounded-md "

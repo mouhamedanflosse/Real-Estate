@@ -45,7 +45,7 @@ function Profile() {
   };
   useEffect(() => {
     fetchUserListing();
-  }, [auth.currentUser.uid]);
+  }, []);
   // -------------------------------delete listing item
   const onDelete = async (id) => {
     try {

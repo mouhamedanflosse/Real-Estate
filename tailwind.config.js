@@ -7,6 +7,7 @@ module.exports = withMT({
       screens: {
         Xmd: "860px",
         Xsm: "481px",
+        Xsmd: "633px",
         FS: "100%",
       },
       gridTemplateColumns: {

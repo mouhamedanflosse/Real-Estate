@@ -61,15 +61,34 @@ const navigate = useNavigate()
               >
                 {listing.discreption}
               </Typography>
+              { listing.offer ?
+              <div className="flex gap-3">
               <p className="text-[20px] text-blue-900 font-semibold">
                 $
-                {listing.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                {listing.discount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 {listing.rentOrSell === "rent" ? (
                   <span className="text-[16px] font-bold ml-2">/Mounth</span>
                 ) : (
                   ""
                 )}
               </p>
+              <p className="text-[16px] font-bold self-end line-through  text-red-900 decoration-2">
+                
+                $
+                {listing.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              </p>
+              </div>
+              :
+              <p className="text-[20px] text-blue-900 font-semibold">
+              $
+              {listing.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              {listing.rentOrSell === "rent" ? (
+                <span className="text-[16px] font-bold ml-2">/Mounth</span>
+              ) : (
+                ""
+              )}
+            </p>
+              }
             </CardBody>
           </Link>
           <CardFooter className="flex py-1 items-center justify-between">
