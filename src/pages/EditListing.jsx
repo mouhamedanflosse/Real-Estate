@@ -22,6 +22,7 @@ import { db } from "../config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRef } from "react";
+import axios from "axios";
 
 export default function EditListing() {
   // ---------------------------
@@ -40,6 +41,7 @@ export default function EditListing() {
         hasBeenExecuted.current = true;
       }
       setTitle(data.title);
+      setPrevTitle(data.title);
       setBaths(data.Baths);
       setBeds(data.beds);
       setDiscreption(data.discreption);
@@ -64,10 +66,11 @@ export default function EditListing() {
   const [submiting, setSubmiting] = useState(false);
 
   // ------------------enableGeolocation
-  const [GeolocationEnabled, setGeolocationEnabled] = useState(false);
+  const [GeolocationEnabled, setGeolocationEnabled] = useState(true);
 
   // ----------------------from inputs status
   const [title, setTitle] = useState("");
+  const [prevTitle, setPrevTitle] = useState("");
   const [RentOrSell, setRentOrSell] = useState("rent");
   const [beds, setBeds] = useState(1);
   const [Baths, setBaths] = useState(1);
@@ -121,6 +124,17 @@ export default function EditListing() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setSubmiting(true);
+    const options = {
+      method: "GET",
+      url: "https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi",
+      params: {
+        address: title,
+      },
+      headers: {
+        "X-RapidAPI-Key": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
+        "X-RapidAPI-Host": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`,
+      },
+    };
     const listingInfo = {
       title: title,
       rentOrSell: RentOrSell,
@@ -134,6 +148,19 @@ export default function EditListing() {
       offer: offer,
       discount: discount,
     };
+    try {
+      if (title  !== prevTitle) {
+      const response = await axios.request(options);
+      console.log(response.data);
+      setLatitude(response.data.Results[0].latitude)
+      setLatitude(response.data.Results[0].longitude)
+      listingInfo.adress.latitude = response.data.Results[0].latitude
+      listingInfo.adress.longitude = response.data.Results[0].longitude
+}
+    } catch (error) {
+      console.error(error);
+      return toast.error("invalid adress")
+    }
     // ------------upload the images
     let imgUrls;
     if (pic === "") {
@@ -193,14 +220,6 @@ export default function EditListing() {
             >
               <TabPanel value="card" className="p-0">
                 <form className="mt-[20px] flex flex-col gap-4">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="title"
-                    required
-                    className="p-[5px] shadow-sm border-2 border-gray-500 mx-auto w-full bordr outline-none dark:bg-[#334155] rounded-md"
-                  />
                   <Select
                     onChange={(e) => setRentOrSell(e)}
                     color="gray"
@@ -308,6 +327,8 @@ export default function EditListing() {
                       <textarea
                         className="border-2 w-full outline-none border-gray-500 resize-none rounded-md p-[10px] h-[50px]"
                         name="discreption"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         rows="10"
                         placeholder="Adress"
                       ></textarea>

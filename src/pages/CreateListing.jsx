@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   CardBody,
   Tabs,
@@ -9,6 +9,7 @@ import {
   TabPanel,
   Card,
   Select,
+  Button,
   Option,
 } from "@material-tailwind/react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -16,45 +17,17 @@ import { auth, storage } from "../config/firebase";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { Spinner } from "@material-tailwind/react";
 import { useState } from "react";
-import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { db } from "../config/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 const CreateListing = () => {
-  // -------------------------useEffect
-  useEffect(() => {
-    handleLocationClick();
-  }, []);
   // -----------open end switch tabs states
   const [type, setType] = useState("card");
   const [submiting, setSubmiting] = useState(false);
 
   // ------------------enableGeolocation
-  const [GeolocationEnabled, setGeolocationEnabled] = useState(false);
-  // -------------------------adress
-
-const options = {
-  method: 'GET',
-  url: 'https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi',
-  params: {
-    address: "adress"
-  },
-  headers: {
-    'X-RapidAPI-Key': `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
-    'X-RapidAPI-Host': `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`
-  }
-};
-// ------------------fteching adress 
- const fetchAdress = async () => {
-   try {
-     const response = await axios.request(options);
-     console.log(response.data);
-   } catch (error) {
-     console.error(error);
-   }
- }
-
+  const [GeolocationEnabled, setGeolocationEnabled] = useState(true);
   // ----------------------from inputs status
   const [title, setTitle] = useState("");
   const [RentOrSell, setRentOrSell] = useState("rent");
@@ -71,25 +44,28 @@ const options = {
   const [address, setAddress] = useState("");
   // -----------------initialize useNavigate
   const navigate = useNavigate();
-
-  function handleLocationClick() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, error);
-    } else {
-      console.log("Geolocation not supported");
+  // ------------------fteching adress
+  const fetchAdress = async () => {
+    const options = {
+      method: "GET",
+      url: "https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi",
+      params: {
+        address: title,
+      },
+      headers: {
+        "X-RapidAPI-Key": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
+        "X-RapidAPI-Host": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`,
+      },
+    };
+    try {
+      const response = await axios.request(options);
+      console.log(response.data);
+      setLatitude(response.data.Results[0].latitude);
+      setLongitude(response.data.Results[0].longitude);
+    } catch (error) {
+      console.error(error);
     }
-  }
-
-  function success(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    setLatitude(latitude);
-    setLongitude(longitude);
-  }
-
-  function error() {
-    console.log("Unable to retrieve your location");
-  }
+  };
 
   // ------------------- picture
   function handlePhoto(e) {
@@ -127,6 +103,18 @@ const options = {
   const onSubmit = async (e) => {
     e.preventDefault();
     setSubmiting(true);
+    const options = {
+      method: "GET",
+      url: "https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi",
+      params: {
+        address: title,
+      },
+      headers: {
+        "X-RapidAPI-Key": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
+        "X-RapidAPI-Host": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`,
+      },
+    };
+    // await fetchAdress()
     const listingInfo = {
       title: title,
       rentOrSell: RentOrSell,
@@ -136,11 +124,20 @@ const options = {
       adress: { latitude: latitude, longitude: longitude },
       price: price,
       discreption: discreption,
-      offer : offer,
-      discount : discount,
+      offer: offer,
+      discount: discount,
     };
-    console.log(listingInfo);
-    console.log(pic);
+    try {
+      const response = await axios.request(options);
+      console.log(response.data);
+      setLatitude(response.data.Results[0].latitude);
+      setLatitude(response.data.Results[0].longitude);
+      listingInfo.adress.latitude = response.data.Results[0].latitude;
+      listingInfo.adress.longitude = response.data.Results[0].longitude;
+    } catch (error) {
+      console.error(error);
+      return toast.error("invalid adress");
+    }
     // ------------upload the images
     const imgUrls = await Promise.all(
       [...pic].map((image) => storeImage(image))
@@ -194,13 +191,6 @@ const options = {
             >
               <TabPanel value="card" className="p-0">
                 <form className="mt-[20px] flex flex-col gap-4">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="title"
-                    className="p-[5px] shadow-sm border-2 border-gray-500 mx-auto w-full bordr outline-none dark:bg-[#334155] rounded-md"
-                  />
                   <Select
                     onChange={(e) => setRentOrSell(e)}
                     color="gray"
@@ -308,6 +298,8 @@ const options = {
                         className="border-2 w-full outline-none border-gray-500 resize-none rounded-md p-[10px] h-[50px]"
                         name="discreption"
                         rows="10"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         placeholder="Adress"
                       ></textarea>
                     </div>
