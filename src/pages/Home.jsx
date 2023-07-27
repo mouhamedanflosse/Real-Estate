@@ -237,15 +237,9 @@ function Home() {
                           ""
                         )}
                       </p>
-                      <p className="text-[16px] font-bold self-end line-through text-red-900 decoration-2">
-                        $
-                        {offer.data.price
-                          .toString()
-                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      </p>
                     </div>
                   ) : (
-                    <p className="text-[20px] translate-y-2 text-blue-900 font-semibold">
+                    <p className="text-[20px] mb-2 translate-y-2 text-blue-900 font-semibold">
                       $
                       {offer.data.price
                         .toString()
