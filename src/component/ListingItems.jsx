@@ -39,30 +39,30 @@ const navigate = useNavigate()
               floated={false}
               shadow={false}
               color="transparent"
-              className="m-0 w-full rounded-none"
+              className="m-0 w-full h-[200px] rounded-none"
             >
               <img
-                className="w-full"
+                className="w-full h-full"
                 src={listing.imgUrls[0]}
                 alt={listing.title}
               />
             </CardHeader>
-            <CardBody className="py-2">
+            <CardBody className="py-2 ">
               <Typography className="text-right font-semibold text-blue-700">
                 <Moment fromNow>{listing.timestamp?.toDate()}</Moment>
               </Typography>
-              <Typography variant="h5" color="blue-gray">
+              <div className="h-[50px]">
+              <p  className="text-ellipsis line-clamp-2 text-[20px] font-bold" >
                 {listing.title}
-              </Typography>
-              <Typography
-                variant="h6"
-                color="gray"
-                className="mt-3 font-normal"
-              >
+              </p>
+              </div>
+              <div className="h-[70px]">
+              <p  className="text-ellipsis my-2 line-clamp-3 " >
                 {listing.discreption}
-              </Typography>
+              </p>
+              </div>
               { listing.offer ?
-              <div className="flex gap-3">
+              <div className="flex translate-y-2 gap-3">
               <p className="text-[20px] text-blue-900 font-semibold">
                 $
                 {listing.discount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
@@ -79,7 +79,7 @@ const navigate = useNavigate()
               </p>
               </div>
               :
-              <p className="text-[20px] text-blue-900 font-semibold">
+              <p className="text-[20px] translate-y-2 text-blue-900 font-semibold">
               $
               {listing.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
               {listing.rentOrSell === "rent" ? (

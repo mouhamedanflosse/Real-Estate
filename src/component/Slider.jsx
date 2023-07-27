@@ -77,7 +77,7 @@ export default function Slider() {
         {listing.map((img, index) => (
           <div
             key={index}
-            className="h-full select-none   bg-center rounded-md object-cover mx-auto"
+            className="h-full relative select-none   bg-center rounded-md object-cover mx-auto"
           >
             <img
               alt={img.title}
@@ -101,7 +101,7 @@ export default function Slider() {
                     ""
                   )}
                 </p>
-                <p className="text-[16px] font-bold self-end line-through  text-black decoration-2">
+                <p className="text-[16px] font-bold self-end line-through  text-gray-800 decoration-2">
                   $
                   {img.data.price
                     .toString()

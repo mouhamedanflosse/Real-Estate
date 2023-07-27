@@ -50,8 +50,8 @@ export default function EditListing() {
       setPrice(data.price);
       setUrlPic(data.imgUrls);
       setTimestamp(data.timestamp);
-      setDiscount(data.discount)
-      setOffer(data.offer)
+      setDiscount(data.discount);
+      setOffer(data.offer);
     } catch (err) {
       console.log(err);
     }
@@ -198,6 +198,7 @@ export default function EditListing() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="title"
+                    required
                     className="p-[5px] shadow-sm border-2 border-gray-500 mx-auto w-full bordr outline-none dark:bg-[#334155] rounded-md"
                   />
                   <Select
@@ -376,7 +377,7 @@ export default function EditListing() {
                         id="formFile"
                         onChange={handlePhoto}
                         multiple
-                        accept=".jpg,.png,.jpeg"
+                        accept=".jpg,.png,.jpeg,.webp"
                       />
                     </label>
                   </div>

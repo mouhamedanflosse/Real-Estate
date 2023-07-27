@@ -14,6 +14,7 @@ import Privateroute from "./component/PrivateRoute";
 import CreateListing from "./pages/CreateListing";
 import EditListing from "./pages/EditListing";
 import Listing from "./pages/Listing";
+import Category from "./pages/category";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             </Route>
             {/* ------------------------------ */}
             <Route path="/category/:categoryName/:listingId" element={<Listing />} />
+            <Route path="/category/:categoryName" element={<Category />} />
             {/* ------------------------------ */}
             <Route path="/edit-listing" element={<Privateroute/>}>
             <Route path="/edit-listing/:listingId" element={<EditListing />} />

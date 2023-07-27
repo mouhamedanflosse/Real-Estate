@@ -112,6 +112,8 @@ const CreateListing = () => {
       adress: { latitude: latitude, longitude: longitude },
       price: price,
       discreption: discreption,
+      offer : offer,
+      discount : discount,
     };
     console.log(listingInfo);
     console.log(pic);
@@ -350,7 +352,7 @@ const CreateListing = () => {
                         id="formFile"
                         onChange={handlePhoto}
                         multiple
-                        accept=".jpg,.png,.jpeg"
+                        accept=".jpg,.png,.jpeg,.webp"
                         required
                       />
                     </label>

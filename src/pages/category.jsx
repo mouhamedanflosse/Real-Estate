@@ -19,33 +19,35 @@ import {
 import { useEffect, useState } from "react";
 import { FaBath, FaBed } from "react-icons/fa";
 import Moment from "react-moment";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { db } from "../config/firebase";
 import Loader from "../component/Loader";
 import { FcRefresh } from "react-icons/fc";
 import { motion } from "framer-motion";
 
-function Offers() {
-  // ------------------offers listing
-  const [offers, setOffers] = useState("");
+const Category = () => {
+  // ------------------inintialze useParams
+  const params = useParams();
+  // ------------------listing listing
+  const [listing, setListing] = useState("");
   // ------------------last offer
-  const [lastOffer, setLastOffer] = useState("");
+  const [lastListing, setLastListing] = useState("");
   // --------------listing end
   const [listingEnd, setListingsEnd] = useState(false);
 
   useEffect(() => {
-    const fetchOffersListing = async () => {
+    const fetchListing = async () => {
       try {
         const offersRef = collection(db, "listings");
         const Q = query(
           offersRef,
-          where("offer", "==", true),
+          where("rentOrSell", "==", params.categoryName),
           orderBy("timestamp", "desc"),
           limit(8)
         );
         const querySnap = await getDocs(Q);
         const lastItem = querySnap.docs[querySnap.docs.length - 1];
-        setLastOffer(lastItem);
+        setLastListing(lastItem);
         let listings = [];
         querySnap.forEach((listing) => {
           return listings.push({
@@ -53,40 +55,40 @@ function Offers() {
             data: listing.data(),
           });
         });
-        setOffers(listings);
+        setListing(listings);
       } catch (err) {
         console.log(err);
       }
     };
-    fetchOffersListing();
+    fetchListing();
   }, []);
 
   // ----------------useEffect
   useEffect(() => {
     async function lastOfferCheck() {
       const coll = collection(db, "listings");
-      const q = query(coll, where("offer", "==", true));
+      const q = query(coll, where("rentOrSell", "==", params.categoryName));
       const snapshot = await getCountFromServer(q);
-      if (offers.length === snapshot.data().count) {
+      if (listing.length === snapshot.data().count) {
         setListingsEnd(true);
       }
     }
     lastOfferCheck();
-  }, [offers]);
+  }, [listing]);
   // fetch more offers
   const fetchMoreOffers = async () => {
     try {
       const offersRef = collection(db, "listings");
       const Q = query(
         offersRef,
-        where("offer", "==", true),
+        where("rentOrSell", "==", params.categoryName),
         orderBy("timestamp", "desc"),
-        startAfter(lastOffer),
+        startAfter(lastListing),
         limit(8)
       );
       const querySnap = await getDocs(Q);
       const lastItem = querySnap.docs[querySnap.docs.length - 1];
-      setLastOffer(lastItem);
+      setLastListing(lastItem);
       let listings = [];
       querySnap.forEach((listing) => {
         return listings.push({
@@ -94,35 +96,29 @@ function Offers() {
           data: listing.data(),
         });
       });
-      setOffers((prevState) => [...prevState, ...listings]);
-      const coll = collection(db, "listings");
-      const q = query(coll, where("offer", "==", true));
-      const snapshot = await getCountFromServer(q);
-      if (offers.length === snapshot.data().count) {
-        setListingsEnd(true);
-      }
+      setListing((prevState) => [...prevState, ...listings]);
     } catch (err) {
       console.log(err);
     }
   };
-  return !lastOffer ? (
+  return !listing ? (
     <Loader />
   ) : (
     <div className="max-w-6xl mx-auto px-3">
-      <h1 className="text-3xl text-center mt-6 font-bold mb-6">Offers</h1>
+      <h1 className="text-3xl text-center mt-6 font-bold mb-6">
+        {params.categoryName}
+      </h1>
       <div className="flex flex-wrap justify-center gap-5">
-        {offers.map((offer,index) => (
+        {listing.map((offer, index) => (
           <motion.div
             transition={{ delay: 0.1 * index }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
             key={offer.id}
-            className="max-w-[250px] overflow-hidden cursor-pointe"
-            >
-            <Card
-            className="max-w-[250px] overflow-hidden cursor-pointe"
-              >
+            className="max-w-[250px] overflow-hidden cursor-pointer"
+          >
+            <Card>
               <Link
                 className="mx-auto"
                 to={`/category/${offer.data.rentOrSell}/${offer.id}`}
@@ -131,7 +127,7 @@ function Offers() {
                   floated={false}
                   shadow={false}
                   color="transparent"
-                  className="m-0 w-full h-[200px] rounded-none"
+                  className="m-0 h-[200px] w-full rounded-none"
                 >
                   <img
                     className="w-full h-full"
@@ -139,7 +135,7 @@ function Offers() {
                     alt={offer.data.title}
                   />
                 </CardHeader>
-                <CardBody className="p-6 py-2">
+                <CardBody className="p-6 py-1">
                   <Typography className="text-right font-semibold text-blue-700">
                     <Moment fromNow>{offer.data.timestamp?.toDate()}</Moment>
                   </Typography>
@@ -176,7 +172,7 @@ function Offers() {
                   </div>
                 </CardBody>
               </Link>
-              <CardFooter className="flex p-0 px-6 pb-2 w-full items-center ">
+              <CardFooter className="flex py-0 mb-2 items-center justify-between">
                 <div className="flex justify-between items-center font-bold space-x-3 gap-6">
                   <div className="flex items-center gap-1 text-[18px]">
                     {offer.data.beds}
@@ -204,6 +200,6 @@ function Offers() {
       )}
     </div>
   );
-}
+};
 
-export default Offers;
+export default Category;

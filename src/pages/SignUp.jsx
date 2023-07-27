@@ -9,7 +9,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { auth, db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { Spinner } from "@material-tailwind/react";
 
@@ -20,8 +20,6 @@ const SingUp = () => {
   // submiting state
   const [submiting, setSubmiting] = useState(false);
 
-  // user collection ref
-  const movieCollectionRef = collection(db, "users");
   // Initialize useNavigate
   const navigate = useNavigate();
 
@@ -36,13 +34,17 @@ const SingUp = () => {
   // -----------------validationSchema
   const validationSchema = Yup.object({
     name: Yup.string()
-      .matches(/^[^-\s][a-zA-Z0-9_\s-]{3,19}$/, "3 element at least, 20 max")
+      .matches(/^[^-\s][a-zA-Z0-9_\s-]{2,19}$/, "3 element at least, 20 max")
       .required("this field can not be empty"),
     Email: Yup.string()
-      .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, "invalid Email")
+      .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, "Must be mixed")
       .required("this field can not be empty"),
     password: Yup.string()
-      .matches(/^[^-\s][a-zA-Z0-9_\s-]{7,19}$/, "8 element at least")
+      .min(8, "Must be 8 characters or more")
+      .matches(
+        /^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()-=_+~`'"\\|/?><.,;:])[a-zA-Z0-9!@#$%^&*()-=_+~`'"\\|/?><.,;: ]/,
+        "invalid password"
+      )
       .required("this field can not be empty"),
     confirme: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
@@ -59,7 +61,8 @@ const SingUp = () => {
         values.password
       );
       updateProfile(auth.currentUser, { displayName: values.name });
-      await addDoc(movieCollectionRef, {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await setDoc(userRef, {
         name: values.name,
         email: values.Email,
         timestamp: serverTimestamp(),
@@ -70,13 +73,12 @@ const SingUp = () => {
     } catch (err) {
       setSubmiting(false);
       if (JSON.stringify(err).includes("auth/network-request-failed")) {
-        toast.error("terrible connection");
+        toast.error("terrible connection"); 
       } else if (JSON.stringify(err).includes("auth/email-already-in-use")) {
         toast.error("this email already exist");
       }
     }
   };
-  console.log(auth.currentUser?.email);
   return (
     <div className="relative mt-[80px]">
       <Link to="/sign-up">

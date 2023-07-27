@@ -133,13 +133,13 @@ export default function Listing() {
       </div>
       <div className="max-w-6xl relative bg-white rounded-md mx-auto my-8 shadow-sm flex Xsmd:flex-row flex-col ">
         <div className=" p-4 relative flex Xsm:m-0 flex-col gap-2">
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center gap-x-10">
           <div className="flex items-center gap-2 text-[20px]">
             <BsFillHouseHeartFill className=" text-red-500" />
             <h1 className="font-semibold ">{`For ${listing.rentOrSell}`}</h1>
           </div>
           { listing.offer ?
-              <div className="flex gap-3">
+              <div className="flex mx-auto gap-3">
               <p className="text-[20px] text-blue-900 font-semibold">
                 $
                 {listing.discount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
@@ -189,7 +189,7 @@ export default function Listing() {
             <div className="w-[250px] mb-2">
               <h1 className="font-semibold text-[20px] mb-1">discreption</h1>
               <h4>{listing.discreption}</h4>
-              {listing.userRef !== auth.currentUser.uid && (
+              {listing.userRef !== auth.currentUser?.uid && (
                 <Accordion open={open === 1}>
                   <h1
                     className="flex text-[20px] font-semibold cursor-pointer mt-1 ml-2 items-center"

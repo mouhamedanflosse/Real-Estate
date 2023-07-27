@@ -67,10 +67,10 @@ function Profile() {
 
   return (
     <div>
-      <div className="w-fit mx-auto relative">
+      <div className="w-[200px] mx-auto relative">
         <EditUserInfo />
-        <img className="w-[80px] mx-auto rounded-[50%] mt-3" src={auth.currentUser?.photoURL ? auth.currentUser?.photoURL : user} alt="user" />
-        <h1 className="font-bold  flex justify-start items-center text-[19px] gap-1">
+        <img className="w-[80px] mx-auto rounded-[50%] mt-3" src={auth.currentUser?.photoURL ? auth.currentUser?.photoURL : user} referrerPolicy="no-referrer" alt="user" />
+        <h1 className="font-bold  flex justify-center items-center text-[19px] gap-1">
           {auth.currentUser?.displayName}
         </h1>
         <Signout />

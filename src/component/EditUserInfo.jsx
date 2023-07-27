@@ -19,15 +19,6 @@ import { updateProfile,updateEmail } from "firebase/auth";
 export default function EditUserInfo() {
   const [open, setOpen] = useState(false);
   const [submiting, setSubmiting] = useState(false);
-  const [name,setName] = useState()
-  const [Email,setEmail] = useState()
-  const [renderProInfo,setRenderProInfo] = useState(false)
-  // ----------------------------useEffect
-  // useEffect(() => {
-  //   setName(auth.currentUser.displayName)
-  //   setEmail(auth.currentUser.email)
-  // },[renderProInfo])
-
   //   ----------------open edit popup
   const handleOpen = () => setOpen((cur) => !cur);
 
@@ -53,7 +44,6 @@ export default function EditUserInfo() {
   const updateUserInfo =  async(values, { resetForm }) => {
     try {
       setSubmiting(true)
-      console.log(values);
       // update profile name
       await updateProfile(auth.currentUser,{
         displayName : values.name,
@@ -71,10 +61,10 @@ export default function EditUserInfo() {
       resetForm({ values: "" });
       handleOpen()
       toast.success("profile name changed");
-      setRenderProInfo("success")
     } catch (err) {
       setSubmiting(false)
       handleOpen()
+      console.log(JSON.stringify(err))
       if (JSON.stringify(err).includes("auth/network-request-failed")) {
         toast.error("terrible connection");
       }
