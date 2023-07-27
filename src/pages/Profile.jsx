@@ -17,7 +17,7 @@ import { Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import ListingItems from "../component/ListingItems";
 import { motion } from "framer-motion";
-import {toast} from "react-toastify"
+import { toast } from "react-toastify";
 
 function Profile() {
   // -------------initialize useNavigate
@@ -49,27 +49,32 @@ function Profile() {
   // -------------------------------delete listing item
   const onDelete = async (id) => {
     try {
-      await deleteDoc(doc(db,"listings",id))
-      fetchUserListing()
+      await deleteDoc(doc(db, "listings", id));
+      fetchUserListing();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       if (JSON.stringify(err).includes("auth/network-request-failed")) {
         toast.error("terrible connection");
       } else {
         toast.error("something went wrong");
       }
     }
-  }
+  };
   // -------------------------------edit listing item
   const onEdite = async (id) => {
-    navigate(`/edit-listing/${id}`)
-  }
+    navigate(`/edit-listing/${id}`);
+  };
 
   return (
     <div>
       <div className="w-[200px] mx-auto relative">
         <EditUserInfo />
-        <img className="w-[80px] mx-auto rounded-[50%] mt-3" src={auth.currentUser?.photoURL ? auth.currentUser?.photoURL : user} referrerPolicy="no-referrer" alt="user" />
+        <img
+          className="w-[80px] mx-auto rounded-[50%] mt-3"
+          src={auth.currentUser?.photoURL ? auth.currentUser?.photoURL : user}
+          referrerPolicy="no-referrer"
+          alt="user"
+        />
         <h1 className="font-bold  flex justify-center items-center text-[19px] gap-1">
           {auth.currentUser?.displayName}
         </h1>
@@ -87,25 +92,27 @@ function Profile() {
           </span>
         </Button>
       </div>
-      <h1 className="text-center text-[50px] mt-[30px] mb-9 font-light">My Listing</h1>
+      <h1 className="text-center text-[50px] mt-[30px] mb-9 font-light">
+        My Listing
+      </h1>
       <div className="px-[40px] flex flex-wrap gap-8">
-          {listings.map((listing,index) => (
-            <motion.div
-            transition={{delay : 0.1 * index}}
-            initial={{opacity : 0, y : 30}}
-            animate={{opacity : 1, y : 0}}
-            exit={{opacity: 0, y : 30}}
+        {listings.map((listing, index) => (
+          <motion.div
+            transition={{ delay: 0.1 * index }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
             key={listing.id}
             className="mx-auto"
-            >
+          >
             <ListingItems
               onDelete={() => onDelete(listing.id)}
               onEdite={() => onEdite(listing.id)}
               listing={listing.data}
               id={listing.id}
             />
-            </motion.div>
-          ))}
+          </motion.div>
+        ))}
       </div>
     </div>
   );

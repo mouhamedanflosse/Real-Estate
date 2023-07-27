@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   CardBody,
   Tabs,
@@ -31,6 +32,28 @@ const CreateListing = () => {
 
   // ------------------enableGeolocation
   const [GeolocationEnabled, setGeolocationEnabled] = useState(false);
+  // -------------------------adress
+
+const options = {
+  method: 'GET',
+  url: 'https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi',
+  params: {
+    address: "adress"
+  },
+  headers: {
+    'X-RapidAPI-Key': `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
+    'X-RapidAPI-Host': `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`
+  }
+};
+// ------------------fteching adress 
+ const fetchAdress = async () => {
+   try {
+     const response = await axios.request(options);
+     console.log(response.data);
+   } catch (error) {
+     console.error(error);
+   }
+ }
 
   // ----------------------from inputs status
   const [title, setTitle] = useState("");
@@ -45,6 +68,7 @@ const CreateListing = () => {
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const [pic, setPic] = useState();
+  const [address, setAddress] = useState("");
   // -----------------initialize useNavigate
   const navigate = useNavigate();
 
