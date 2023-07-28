@@ -25,7 +25,7 @@ const Header = () => {
   }
   return (
     <div className="bg-white w-full sticky z-50 top-0">
-    <div className="header shadow-sm border-b-1 flex mx-auto justify-between max-w-6xl px-[40px] items-center">
+    <div className="header shadow-sm border-b-1 flex mx-auto justify-between max-w-6xl Xsm:px-[40px] px-3 items-center">
         <img onClick={() => navigate("/")} src={logo} alt="real Estate" className="w-[80px] cursor-pointer" />
         <ul className="flex space-x-10">
             <li className={`cursor-pointer select-none text-[16px]
