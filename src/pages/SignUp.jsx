@@ -37,13 +37,13 @@ const SingUp = () => {
       .matches(/^[^-\s][a-zA-Z0-9_\s-]{2,19}$/, "3 element at least, 20 max")
       .required("this field can not be empty"),
     Email: Yup.string()
-      .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, "Must be mixed")
+      .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, "invalid email")
       .required("this field can not be empty"),
     password: Yup.string()
       .min(8, "Must be 8 characters or more")
       .matches(
         /^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*()-=_+~`'"\\|/?><.,;:])[a-zA-Z0-9!@#$%^&*()-=_+~`'"\\|/?><.,;: ]/,
-        "invalid password"
+        "password must be mixed"
       )
       .required("this field can not be empty"),
     confirme: Yup.string()
