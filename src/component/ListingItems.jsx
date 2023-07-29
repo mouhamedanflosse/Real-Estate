@@ -14,20 +14,20 @@ import DeleteListingItem from "./DeleteListingItem";
 import { useState } from "react";
 const ListingItems = ({ listing, id, onDelete, onEdite }) => {
   // --------------------------open popup
-  const [open, setOpen] = useState(false);
+  const [PopUpOpned, setPopUpOpned] = useState(false);
 
   // --------------------------initialze navigate
 const navigate = useNavigate()
 
   //--------------------------submitin state
 
-  const handleOpen = (e) => {
-    setOpen(!open);
+  const deletePopUp = (e) => {
+    setPopUpOpned(!PopUpOpned);
   };
 
   return (
     <>
-      <DeleteListingItem onDelete={onDelete} onEdite={onEdite} Open={open} />
+      <DeleteListingItem onDelete={onDelete} onEdite={onEdite} Open={PopUpOpned} />
       <div className="hover:-translate-y-5 duration-300 translate-y-0">
         {/* --------------------- */}
         <Card className="max-w-[300px] overflow-hidden cursor-pointer">
@@ -108,7 +108,7 @@ const navigate = useNavigate()
               className="cursor-pointer" />
               <AiFillDelete
                 className="cursor-pointer"
-                onClick={(e) => handleOpen(e)}
+                onClick={(e) => deletePopUp(e)}
               />
             </Typography>
           </CardFooter>

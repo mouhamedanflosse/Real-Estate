@@ -38,7 +38,7 @@ export default function DeleteListingItem({Open,onDelete, onEdite,id}) {
   return (
     <>
       <Dialog open={open} size="xs" handler={handleOpen}>
-        <DialogHeader>sure you want to log out</DialogHeader>
+        <DialogHeader>are sure you to delete it</DialogHeader>
         {/* <DialogBody >want to log out</DialogBody> */}
         <DialogFooter>
           <Button
