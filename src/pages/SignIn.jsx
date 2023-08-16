@@ -139,9 +139,6 @@ const SignIn = () => {
                   forget password ?{" "}
                 </p>
               </Link>
-              {/* <div className=""  >
-                <p className=" font-semibold ">or</p>
-              </div> */}
               <OAuth />
             </Form>
           </Formik>

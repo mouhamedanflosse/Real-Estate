@@ -106,8 +106,8 @@ function Profile() {
             className="mx-auto"
           >
             <ListingItems
-              onDelete={() => onDelete(listing.id)}
-              onEdite={() => onEdite(listing.id)}
+              onDelete={() => onDelete()}
+              onEdite={() => onEdite()}
               listing={listing.data}
               id={listing.id}
             />

@@ -11,7 +11,7 @@ export default function Slider() {
   const navigate = useNavigate("");
   // --------------------listing
   const [listing, setListing] = useState();
-  // ------fetching images
+  // ------fetching imagesö
   useEffect(() => {
     const fetchingData = async () => {
       const docRef = collection(db, "listings");

@@ -96,9 +96,6 @@ const ForgetPassword = () => {
                 "Reset password"
                 )}
               </button>
-              {/* <div className=""  >
-                <p className=" font-semibold ">or</p>
-              </div> */}
             </Form>
           </Formik>
         </div>

@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import { useEffect } from "react";
 
 
-export default function DeleteListingItem({Open,onDelete, onEdite,id}) {
+export default function DeleteListingItem({Open,onDelete,id}) {
     // ---------------------------useEffect
     useEffect(() => {
         setOpen(Open)
@@ -21,9 +21,6 @@ export default function DeleteListingItem({Open,onDelete, onEdite,id}) {
   
   //---------------------------submitin state
   const handleOpen = () => setOpen(!open);
-
-  //---------------------------initialize useNavigate
-  const navigate = useNavigate();
 
   // ------------------logOut
   const Delete = async () => {

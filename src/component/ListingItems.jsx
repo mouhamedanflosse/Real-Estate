@@ -27,7 +27,7 @@ const navigate = useNavigate()
 
   return (
     <>
-      <DeleteListingItem onDelete={onDelete} onEdite={onEdite} Open={PopUpOpned} />
+      <DeleteListingItem onDelete={onDelete} onEdite={onEdite} id={id} Open={PopUpOpned} />
       <div className="hover:-translate-y-5 duration-300 translate-y-0">
         {/* --------------------- */}
         <Card className="max-w-[300px] overflow-hidden cursor-pointer">

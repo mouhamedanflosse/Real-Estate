@@ -9,7 +9,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { auth, db } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { collection, addDoc, serverTimestamp, doc, setDoc } from "firebase/firestore";
+import { serverTimestamp, doc, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { Spinner } from "@material-tailwind/react";
 
@@ -69,7 +69,7 @@ const SingUp = () => {
       });
       setSubmiting(false);
       resetForm({ values: "" });
-      navigate("/");
+      navigate("/profile");
     } catch (err) {
       setSubmiting(false);
       if (JSON.stringify(err).includes("auth/network-request-failed")) {
@@ -185,9 +185,6 @@ const SingUp = () => {
                   sign in instead ?{" "}
                 </p>
               </Link>
-              {/* <div className=""  >
-                <p className=" font-semibold ">or</p>
-              </div> */}
               <OAuth />
             </Form>
           </Formik>

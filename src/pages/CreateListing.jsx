@@ -9,7 +9,6 @@ import {
   TabPanel,
   Card,
   Select,
-  Button,
   Option,
 } from "@material-tailwind/react";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -41,31 +40,8 @@ const CreateListing = () => {
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const [pic, setPic] = useState();
-  const [address, setAddress] = useState("");
   // -----------------initialize useNavigate
   const navigate = useNavigate();
-  // ------------------fteching adress
-  const fetchAdress = async () => {
-    const options = {
-      method: "GET",
-      url: "https://address-from-to-latitude-longitude.p.rapidapi.com/geolocationapi",
-      params: {
-        address: title,
-      },
-      headers: {
-        "X-RapidAPI-Key": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_KEY}`,
-        "X-RapidAPI-Host": `${process.env.REACT_APP_FIREBASE_X_RAPID_API_Host}`,
-      },
-    };
-    try {
-      const response = await axios.request(options);
-      console.log(response.data);
-      setLatitude(response.data.Results[0].latitude);
-      setLongitude(response.data.Results[0].longitude);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   // ------------------- picture
   function handlePhoto(e) {
@@ -129,7 +105,6 @@ const CreateListing = () => {
     };
     try {
       const response = await axios.request(options);
-      console.log(response.data);
       setLatitude(response.data.Results[0].latitude);
       setLatitude(response.data.Results[0].longitude);
       listingInfo.adress.latitude = response.data.Results[0].latitude;
@@ -143,8 +118,6 @@ const CreateListing = () => {
       [...pic].map((image) => storeImage(image))
     ).catch((err) => {
       toast.error("images not uploaded");
-      console.log(err);
-      console.log("sucess");
       return;
     });
     // -------------push the listing into firestore
