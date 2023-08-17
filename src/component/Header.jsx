@@ -9,9 +9,9 @@ const Header = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        setPagePath("profile");
+        setPagePath("Profile");
       } else {
-        setPagePath("sign-in");
+        setPagePath("Sign-in");
       }
     });
   }, [auth]);
