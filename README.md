@@ -4,13 +4,13 @@
    - Create, update, and delete property listings for rent or sale.
    - Robust authentication system with sign-in, sign-up, and password reset functionality.
    - Support for signing in with Google accounts for a seamless user experience.
-   - 
-   - ## User Benefits
+     
+   ## User Benefits
    - Easily list and manage properties for rent or sale.
    - Securely authenticate and protect user accounts.
    - Convenient sign-in with Google accounts for a hassle-free experience.
 
-   -  ## Technologies Used
+   ## Technologies Used
    - ReactJS
    - tailwind/material-tailwind
    - Firebase Authentication/storage/firesrore database
@@ -22,7 +22,7 @@
    - leaflet
    - ..etc
 
-   -  ## Installation
+   ## Installation
    1. Clone the repository.
    2. Install dependencies using `npm install`.
    3. Set up the required environment variables.
