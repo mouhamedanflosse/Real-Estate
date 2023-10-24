@@ -1,6 +1,6 @@
    # Real Estate Listings Manager
    
-   https://github.com/mouhamedanflosse/Real-Estate.git
+   ## Key Features
    - Create, update, and delete property listings for rent or sale.
    - Robust authentication system with sign-in, sign-up, and password reset functionality.
    - Support for signing in with Google accounts for a seamless user experience.
